@@ -17,15 +17,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install dependencies
+    - name: Generate SBOM using venv
       run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-        python setup.py sdist bdist_wheel
-    - name: Generate SBOM
-      run: |
-        pip install cyclonedx-bom
-        python -m cyclonedx_py -e -pb --force --format json -o hiq-sbom.cdx.json
+        sbom_venv_generation.sh
     - name: Upload SBOM
       uses: actions/upload-artifact@v3
       with:

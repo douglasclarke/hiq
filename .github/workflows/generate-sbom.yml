@@ -24,10 +24,10 @@ jobs:
     - name: Generate SBOM
       run: |
         pip install cyclonedx-bom
-        python3 -m cyclonedx_py -e --format json -o hiq-sbom.cdx.json
+        python -m cyclonedx_py -e --format json -o hiq-sbom.cdx.json
     - name: Upload SBOM
       uses: actions/upload-artifact@v3
       with:
         name: hiq-sbom.cdx.json
-        path: hiq-sbom.cdx.json
+        path: ./hiq/hiq-sbom.cdx.json
         if-no-files-found: error

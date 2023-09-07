@@ -7,31 +7,31 @@ shell: bash
 
 steps:
   - type: Command
+    name: "Build"
+    command: |
+      python -m pip install --upgrade pip
+      pip install setuptools wheel twine
+      python setup.py sdist bdist_wheel
+      pip install -r requirements-fastapi.txt
+      pip install -r requirements-gpu.txt
+      pip install -r requirements-int.txt
+      pip install -r requirements-lavis.txt
+      pip install -r requirements-nodeps.txt
+      pip install -r requirements-transformers.txt
+      pip install -r requirements.txt
+      pip freeze > requirements-frozen.txt
+
+  - type: Command
     name: "Install cyclonedx_py module"
     command: |
       pip install cyclonedx-bom
+      
   - type: Command
     name: "Run Python cyclonedx_py module"
     command: |
-      python3 -m cyclonedx_py -r -i hiq/requirements-fastapi.txt -pb --format json -o fastapi-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements-gpu.txt -pb --format json -o gpu-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements-int.txt -pb --format json -o int-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements-lavis.txt -pb --format json -o lavis-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements-nodeps.txt -pb --format json -o nodeps-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements-transformers.txt -pb --format json -o transformers-bom.json
-      python3 -m cyclonedx_py -r -i hiq/requirements.txt -pb --format json -o default-bom.json
-  - type: Command
-    name: "Download CycloneDx-cli executable and install dependencies"
-    command: |
-      wget https://github.com/CycloneDX/cyclonedx-cli/releases/download/v0.24.2/cyclonedx-linux-x64
-      yum install -y libicu
-  - type: Command
-    name: "Merge multiple SBOMs using CycloneDX-cli"
-    command: |
-      # For more details, visit https://github.com/CycloneDX/cyclonedx-cli/blob/main/README.md
-      chmod +x cyclonedx-linux-x64
-      ./cyclonedx-linux-x64 merge --input-files fastapi-bom.json gpu-bom.json int-bom.json lavis-bom.json nodeps-bom.json transformers-bom.json default-bom.json --output-file merged-bom.json
+      python3 -m cyclonedx_py -r -i requirements-frozen.txt -pb --force --format json -o hiq.cdx.sbom.json
+
 outputArtifacts:
   - name: artifactSBOM
     type: BINARY
-    location: ${OCI_PRIMARY_SOURCE_DIR}/merged-bom.json
+    location: ${OCI_PRIMARY_SOURCE_DIR}/hiq.cdx.sbom.json

@@ -16,7 +16,7 @@ jobs:
         python-version: '3.x'
     - name: Generate SBOM using venv
       run: |
-        sbom_venv_generation.sh
+        sh -x sbom_venv_generation.sh
     - name: Upload SBOM
       uses: actions/upload-artifact@v3
       with:
